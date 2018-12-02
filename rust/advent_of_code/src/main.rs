@@ -1,33 +1,15 @@
-use std::collections::BTreeSet;
-use std::io::prelude::*;
-use std::io::SeekFrom;
+use std::env;
+use std::io::{Error, ErrorKind};
 
+mod day_1;
 mod input_reader;
 
 fn main() -> std::io::Result<()> {
-    let mut reader = input_reader::create("data/day-1.txt");
+    let args: Vec<String> = env::args().collect();
 
-    let mut line = String::new();
-    let mut current_freq: i32 = 0;
-    let mut frequencies: BTreeSet<i32> = BTreeSet::new();
-
-    frequencies.insert(current_freq);
-
-    loop {
-        while reader.read_line(&mut line)? > 0 {
-            match line.trim().parse::<i32>() {
-                Ok(num) => current_freq += num,
-                Err(_) => continue,
-            };
-
-            if !frequencies.insert(current_freq) {
-                println!("Duplicate frequency: {}", current_freq);
-                return Ok(());
-            }
-
-            line.clear();
-        }
-
-        reader.seek(SeekFrom::Start(0))?;
+    match args[1].as_str() {
+        "day-1-1" => day_1::freq_calc::run(),
+        "day-1-2" => day_1::dup_freq::detect(),
+        _ => Err(Error::new(ErrorKind::InvalidInput, "invalid argument")),
     }
 }
