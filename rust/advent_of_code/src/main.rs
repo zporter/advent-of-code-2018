@@ -1,12 +1,11 @@
 use std::collections::BTreeSet;
-use std::fs::File;
 use std::io::prelude::*;
-use std::io::BufReader;
 use std::io::SeekFrom;
 
+mod input_reader;
+
 fn main() -> std::io::Result<()> {
-    let input = File::open("data/day-1.txt")?;
-    let mut reader = BufReader::new(input);
+    let mut reader = input_reader::create("data/day-1.txt");
 
     let mut line = String::new();
     let mut current_freq: i32 = 0;
