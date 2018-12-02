@@ -1,6 +1,8 @@
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::SeekFrom;
 
 fn main() -> std::io::Result<()> {
     let input = File::open("data/day-1.txt")?;
@@ -8,17 +10,25 @@ fn main() -> std::io::Result<()> {
 
     let mut line = String::new();
     let mut current_freq: i32 = 0;
+    let mut frequencies: BTreeSet<i32> = BTreeSet::new();
 
-    while reader.read_line(&mut line)? > 0 {
-        match line.trim().parse::<i32>() {
-            Ok(num) => current_freq += num,
-            Err(_) => continue,
-        };
+    frequencies.insert(current_freq);
 
-        line.clear();
+    loop {
+        while reader.read_line(&mut line)? > 0 {
+            match line.trim().parse::<i32>() {
+                Ok(num) => current_freq += num,
+                Err(_) => continue,
+            };
+
+            if !frequencies.insert(current_freq) {
+                println!("Duplicate frequency: {}", current_freq);
+                return Ok(());
+            }
+
+            line.clear();
+        }
+
+        reader.seek(SeekFrom::Start(0))?;
     }
-
-    println!("Current frequency: {}", current_freq);
-
-    Ok(())
 }
