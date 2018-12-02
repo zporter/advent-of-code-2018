@@ -1,19 +1,24 @@
-use std::env;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufReader;
 
-// cargo run -- "$(cat data/day-1_1.txt)"
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let freq_changes: Vec<&str> = args[1].split("\n").collect();
+fn main() -> std::io::Result<()> {
+    let input = File::open("data/day-1.txt")?;
+    let mut reader = BufReader::new(input);
+
+    let mut line = String::new();
     let mut current_freq: i32 = 0;
 
-    for change in freq_changes.iter() {
-        let amount: i32 = match change.parse() {
-            Ok(num) => num,
-            Err(_) => 0,
+    while reader.read_line(&mut line)? > 0 {
+        match line.trim().parse::<i32>() {
+            Ok(num) => current_freq += num,
+            Err(_) => continue,
         };
 
-        current_freq += amount;
+        line.clear();
     }
 
     println!("Current frequency: {}", current_freq);
+
+    Ok(())
 }
