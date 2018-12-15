@@ -15,4 +15,20 @@ defmodule AdventOfCode.Day2Test do
   test "getting checksum of box IDs", %{input: input} do
     assert Day2.checksum(input) == 7221
   end
+
+  test "getting common letters", %{input: input} do
+    example_input = ~w[
+      abcde
+      fghij
+      klmno
+      pqrst
+      fguij
+      axcye
+      wvxyz
+    ]
+
+    assert Day2.common_letters(example_input) == "fgij"
+
+    assert Day2.common_letters(input) == "mkcdflathzwsvjxrevymbdpoq"
+  end
 end

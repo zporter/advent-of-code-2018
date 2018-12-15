@@ -72,4 +72,50 @@ defmodule AdventOfCode.Day2 do
       Map.update(counts, letter, 1, &(&1 + 1))
     end)
   end
+
+  @spec common_letters([binary]) :: binary
+  def common_letters([]), do: ""
+
+  def common_letters(box_ids) when is_list(box_ids) do
+    box_ids
+    # let's transform a list of binaries to a list of charlists.
+    |> Enum.map(&String.codepoints/1)
+    # now, let's find the common chars
+    |> common_chars()
+  end
+
+  @spec common_chars([charlist()]) :: binary
+  defp common_chars([box_id | box_ids]) do
+    common_chars(box_id, box_ids) || common_chars(box_ids)
+  end
+
+  @spec common_chars(charlist, [charlist]) :: binary | nil
+  defp common_chars(_box_id, []), do: nil
+
+  defp common_chars(box_id, [other_box_id | box_ids]) do
+    box_id
+    # let's add an index to look up and compare with the character in the
+    # other char list.
+    |> Enum.with_index()
+    # the first elem in the tuple tracks the number of different characters
+    # encountered. the second elem tracks the common chars as a String.
+    |> Enum.reduce_while({0, ""}, fn
+      # halt when the diff is greater than 1.
+      _char, {diff, _common} when diff > 1 ->
+        {:halt, nil}
+
+      # compare the characters. when the same, append to the String in the
+      # tuple. when different, add to the diff count in the tuple.
+      {char, index}, {diff, common} ->
+        if Enum.at(other_box_id, index) == char do
+          {:cont, {diff, common <> char}}
+        else
+          {:cont, {diff + 1, common}}
+        end
+    end)
+    |> case do
+      {diff, common} when diff < 2 -> common
+      _ -> common_chars(box_id, box_ids)
+    end
+  end
 end
